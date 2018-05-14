@@ -3,7 +3,7 @@ calculate matrix
 
 with BUG
 
-mainpage https://github.com/xiaoguai12137/mat_calculate.git
+mainpage https://github.com/MaXinglong/playground/tree/master/matrix
 
 
 # Usage
