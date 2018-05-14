@@ -91,6 +91,6 @@ A = B.exp();
 A = A.pow(2);
 A = B.log()*B.exp(); //...
 ```
-## except broadcasting!
+## expect for broadcasting!
 ## and now can use this lib to implement a neural network!
 ## excited~
