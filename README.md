@@ -19,4 +19,10 @@ Sgmentation using CNN architectures.
 
 ## detection
 Detection using CNN architectures.
+<<<<<<< HEAD
 >>>>>>> add Matrix
+=======
+
+## undergraduate 
+An undergraduate thesis project. Using line laser and camera reconstruct the environment.
+>>>>>>> Update README.md
