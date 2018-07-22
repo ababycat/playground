@@ -2,6 +2,7 @@
 
 ## GaussianNet
 <<<<<<< HEAD
+<<<<<<< HEAD
 An idea for generate an gaussian attention for image.
 
 ## matrix
@@ -13,6 +14,12 @@ an idea for generate an gaussian attention for image.
 
 >>>>>>> test modifi
 =======
+=======
+An idea for generate an gaussian attention for image and using CNN.
+
+## matrix
+A library for matrix calculation wrote by pure c++. Please see the README.md file for using it.
+>>>>>>> Update README.md
 
 ## segmentation
 Sgmentation using CNN architectures.
@@ -25,4 +32,10 @@ Detection using CNN architectures.
 
 ## undergraduate 
 An undergraduate thesis project. Using line laser and camera reconstruct the environment.
+<<<<<<< HEAD
+>>>>>>> Update README.md
+=======
+
+## processing
+Read the book [The Nature of the Code](https://natureofcode.com/).
 >>>>>>> Update README.md
