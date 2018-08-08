@@ -45,4 +45,10 @@ An undergraduate thesis project. Using line laser and camera reconstruct the env
 
 ## processing
 Read the book [The Nature of the Code](https://natureofcode.com/).
+<<<<<<< HEAD
 >>>>>>> Update README.md
+=======
+
+## EM
+EM(Expectation-Maximization) algorithm
+>>>>>>> add em
