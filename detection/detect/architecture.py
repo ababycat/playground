@@ -1,3 +1,7 @@
+import torch
+from torch import nn
+import torchvision as vision
+
 def conv3x3(in_, out):
     return nn.Conv2d(in_, out, 3, padding=1)
 
@@ -61,7 +65,7 @@ class AlbuNet(nn.Module):
 
         self.pool = nn.MaxPool2d(2, 2)
 
-        self.encoder = torchvision.models.resnet34(pretrained=pretrained)
+        self.encoder = vision.models.resnet34(pretrained=pretrained)
 
         self.relu = nn.ReLU(inplace=True)
 
@@ -79,8 +83,8 @@ class AlbuNet(nn.Module):
         self.conv5 = self.encoder.layer4
         
         self.conv6 = nn.Sequential(
-            nn.Conv2d(512, 512, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(inplace=True))
+            nn.Conv2d(512, 256, kernel_size=3, stride=2, padding=1),
+            nn.LeakyReLU(inplace=True))
 
         self.center = DecoderBlockV2(512, num_filters * 8 * 2, num_filters * 8, is_deconv)
 
@@ -99,8 +103,12 @@ class AlbuNet(nn.Module):
         conv4 = self.conv4(conv3)
         conv5 = self.conv5(conv4)
 
-        center = self.center(self.conv6(conv5))
-        dec5 = self.dec5(torch.cat([center, conv5], 1))
+        # center = self.center(self.conv6(conv5))
+        # dec5 = self.dec5(torch.cat([center, conv5], 1))
+        
+        out = self.conv6(conv5)
+        return out
+
 #         dec4 = self.dec4(torch.cat([dec5, conv4], 1))
 #         dec3 = self.dec3(torch.cat([dec4, conv3], 1))
 #         dec2 = self.dec2(torch.cat([dec3, conv2], 1))
@@ -111,7 +119,7 @@ class AlbuNet(nn.Module):
 #             x_out = F.log_softmax(self.final(dec0), dim=1)
 #         else:
 #             x_out = self.final(dec0)
-        return dec5
+        # return dec5
 
 
 class RNN_Decoder(nn.Module):
@@ -124,15 +132,22 @@ class RNN_Decoder(nn.Module):
         self.output_size = linear_output_size
     
         self.lstm = nn.LSTMCell(self.input_size, self.hidden_size)
-        self.leaky1 = nn.LeakyReLU()
-        self.bn1 = nn.BatchNorm1d(self.hidden_size)
-        self.dropout1 = nn.Dropout(0.1)
-        self.linear1 = nn.Linear(self.hidden_size, 256)
+#         self.leaky1 = nn.LeakyReLU()
+#         self.bn1 = nn.BatchNorm1d(self.hidden_size)
+#         self.dropout1 = nn.Dropout(0.1)
+#         self.linear1 = nn.Linear(self.hidden_size, 256)
         
-        self.leaky2 = nn.LeakyReLU()
-        self.bn2 = nn.BatchNorm1d(256)
-        self.dropout2 = nn.Dropout(0.1)
-        self.linear2 = nn.Linear(256, self.output_size)
+#         self.leaky2 = nn.LeakyReLU()
+#         self.bn2 = nn.BatchNorm1d(256)
+#         self.dropout2 = nn.Dropout(0.1)
+#         self.linear2 = nn.Linear(256, self.output_size)
+        self.leaky1 = nn.LeakyReLU()
+#         self.bn1 = nn.BatchNorm1d(self.hidden_size)
+        self.dropout1 = nn.Dropout(0.1)
+        self.linear1 = nn.Linear(self.hidden_size, linear_output_size)
+
+    def set_decode_times(self, times):
+        self.times = times
 
     def forward(self, x, hidden):
         """x : BSx256x40x40"""
@@ -153,12 +168,12 @@ class RNN_Decoder(nn.Module):
         x = linear_input.reshape(-1, linear_input.shape[-1])
         x = self.dropout1(x)
         x = self.leaky1(x)
-        x = self.bn1(x)
+#         x = self.bn1(x)
         x = self.linear1(x)
-        x = self.dropout2(x)
-        x = self.leaky2(x)
-        x = self.bn2(x)
-        x = self.linear2(x)
+#         x = self.dropout2(x)
+#         x = self.leaky2(x)
+#         x = self.bn2(x)
+#         x = self.linear2(x)
         # TODO: x: (timesx(BSx40x40))x85 -> timesxBSx40x40x85 -> BSx40x40xtimesx85
         x = x.reshape(self.times, bs, h, w, -1)
         # BSx40x40xtimesx85
@@ -172,17 +187,16 @@ class RNN_Decoder(nn.Module):
 
 
 class DetectNet(nn.Module):
-    def __init__(self, rpn_model, detect_model):
+    def __init__(self, rpn_model, detect_model, scale=1):
         super().__init__()
         self.rpn = rpn_model
         self.detect_model = detect_model
+        self.scale = scale
         
     def forward(self, x, hidden):
         rpn_output = self.rpn(x)
-        detect_output = self.detect_model(rpn_output, hidden)
+        detect_output = self.detect_model(rpn_output*self.scale, hidden)
         return detect_output
     
     def init_rnn_state(self, sample_size):
         return self.detect_model.init_hidden_state(sample_size)
-
-
