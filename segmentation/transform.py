@@ -1,6 +1,7 @@
 import types
 import random
 import math
+import numbers
 
 import numpy as np
 from PIL import Image
@@ -116,7 +117,26 @@ class _RandomGrayscale(transforms.RandomGrayscale):
         if random.random() < self.p:
             return F.to_grayscale(img, 3), target_op(target, F.to_grayscale, 1)
         return img, target
+        
+class _Pad(transforms.Pad):
+    def __init__(self, output_shape, fill=0, padding_mode='constant'):
+        assert isinstance(output_shape, (numbers.Number, tuple))
+        if isinstance(output_shape, numbers.Number):
+            self.out_shape = [output_shape]*2
+        else:
+            self.out_shape = output_shape
+    def __call__(self, img, target):
+        eh, ew = self.out_shape
+        # pad the width if needed
+        if self.pad_if_needed and img.size[0] < ew:
+            img = F.pad(img, (int((1 + ew - img.size[0]) / 2), 0), self.fill, self.padding_mode)
+            target = target_op(target, F.pad, (int((1 + ew - target.size[0]) / 2), 0), self.fill, self.padding_mode)
+        # pad the height if needed
+        if self.pad_if_needed and img.size[1] < eh:
+            img = F.pad(img, (0, int((1 + eh - img.size[1]) / 2)), self.fill, self.padding_mode)
+            target = target_op(target, F.pad, (0, int((1 + eh - target.size[1]) / 2)), self.fill, self.padding_mode)
 
+        
 class _RandomCrop(transforms.RandomCrop):
     def __init__(self, size, padding=None, pad_if_needed=False, fill=0, padding_mode='constant'):
         super().__init__(size, padding=padding, pad_if_needed=pad_if_needed, fill=fill, padding_mode=padding_mode)
