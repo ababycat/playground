@@ -123,7 +123,8 @@ class _RandomGrayscale(transforms.RandomGrayscale):
     def __call__(self, img, target):
         num_output_channels = 1 if img.mode == 'L' else 3
         if random.random() < self.p:
-            return F.to_grayscale(img, 3), target_op(target, F.to_grayscale, 1)
+            # return F.to_grayscale(img, 3), target_op(target, F.to_grayscale, 1)
+            return F.to_grayscale(img, 3), target
         return img, target
         
 class _Pad(transforms.Pad):
