@@ -3,7 +3,7 @@ from torch import nn
 
 class AlbuNet_LSTM_Loss:
     def __init__(self, k, pos_neg_prop, no_ground_class_nums):
-#     def __init__(self, no_ground_class_nums):
+    # def __init__(self, no_ground_class_nums):
         self.pos_neg_prop = pos_neg_prop
         self.k = k
         self.class_nums = no_ground_class_nums
