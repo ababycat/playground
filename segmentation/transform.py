@@ -155,7 +155,9 @@ class _Pad(transforms.Pad):
         
 class _RandomCrop(transforms.RandomCrop):
     def __init__(self, size, padding=None, pad_if_needed=False, fill=0, padding_mode='constant'):
-        super().__init__(size, padding=padding, pad_if_needed=pad_if_needed, fill=fill, padding_mode=padding_mode)
+        super().__init__(size, padding=padding, pad_if_needed=pad_if_needed)#, fill=fill, padding_mode=padding_mode)
+        self.fill = fill
+        self.padding_mode = padding_mode        
         
     def __call__(self, img, target):
         if self.padding is not None:
@@ -194,7 +196,7 @@ class _RandomVerticalFlip(transforms.RandomVerticalFlip):
         return img, target
     
 class _RandomRotation(transforms.RandomRotation):
-    def __init__(self, p, degrees, output_size=512, fill=0, padding_mode='symmetric', resample=Image.NEAREST, expand=False, center=None):
+    def __init__(self, p, degrees, output_size, fill=0, padding_mode='symmetric', resample=Image.NEAREST, expand=False, center=None):
         super().__init__(degrees, resample=resample, expand=expand, center=center)
         self.p = p
         self.padding_mode = padding_mode
