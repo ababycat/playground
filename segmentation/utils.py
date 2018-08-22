@@ -41,3 +41,5 @@ def get_data(root, class_nums):
         data.append(img)
         labels.append(label)
     return (data, labels)
+
+

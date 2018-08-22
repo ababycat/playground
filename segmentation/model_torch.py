@@ -373,8 +373,14 @@ class ShallowNet(nn.Module):
     def __init__(self):
         super().__init__()
         kernel_size = 9
-        self.conv1 = nn.Conv2d(3, 1, kernel_size, stride=1, padding=int((kernel_size-1)/2), bias=True)
+        self.conv1 = nn.Conv2d(3, 4, kernel_size, stride=1, padding=int((kernel_size-1)/2), bias=True)
+        self.bn1 = nn.BatchNorm2d(4)
         self.activation1 = nn.ELU()
+        
+        
+        self.conv2 = nn.Conv2d(4, 1, 1, stride=1)
+        # self.bn2 = nn.BatchNorm2d(4)
+
         # # self.activation1 = torch.tanh()
         # # self.conv2 = nn.Conv2d(4, 1, 1, stride=1)
         # # self.pool1 = torch.nn.MaxPool2d((3, 3), stride=1, padding=1)
@@ -384,12 +390,41 @@ class ShallowNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        # x = self.leaky1(x)
-        # x = -self.activation1(x)
-        # # x = self.pool1(x)
-        # # x, _ = torch.max(x, dim=1, keepdim=True)
-        # # x = torch.mean(x, dim=1, keepdim=True)
+        x = self.bn1(x)
+        # x = self.activation1(x)
+
         # x = self.conv2(x)
-        # x = self.activation2(x)
-        # x = self.conv3(x)
+        x, _ = torch.max(x, dim=1, keepdim=True)    
+        # x = self.bn2(x)
         return x
+
+# class ShallowNet(nn.Module):
+#     def __init__(self):
+#         super().__init__()
+#         kernel_size = 9
+#         self.conv1 = nn.Conv2d(3, 4, kernel_size, stride=1, padding=int((kernel_size-1)/2), bias=True)
+#         self.bn1 = nn.BatchNorm2d(4)
+#         self.activation1 = nn.ELU()
+#         # self.conv2 = nn.Conv2d(4, 1, kernel_size, stride=1, padding=int((kernel_size-1)/2), bias=True)
+
+#         # # self.activation1 = torch.tanh()
+#         # # self.conv2 = nn.Conv2d(4, 1, 1, stride=1)
+#         # # self.pool1 = torch.nn.MaxPool2d((3, 3), stride=1, padding=1)
+#         # self.conv2 = nn.Conv2d(1, 1, 3, stride=1, padding=int((3-1)/2), bias=True)
+#         # self.activation2 = nn.ELU()
+#         # self.conv3 = nn.Conv2d(1, 1, 3, stride=1, padding=int((3-1)/2), bias=True)
+
+#     def forward(self, x):
+#         x = self.conv1(x)
+#         x = self.bn1(x)
+#         # x = self.
+#         # x = self.leaky1(x)
+#         # x = -self.activation1(x)
+#         # # x = self.pool1(x)
+#         # # x, _ = torch.max(x, dim=1, keepdim=True)
+#         x = torch.mean(x, dim=1, keepdim=True)
+#         # x = self.conv2(x)
+#         # x = self.activation2(x)
+#         # x = self.conv3(x)
+#         return x
+

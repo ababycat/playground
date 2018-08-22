@@ -16,9 +16,10 @@ from transform import _ToTensor
 
    
 class LaserDataset(Dataset):
-    def __init__(self, datapath, class_nums, train=True, transform=None):
+    def __init__(self, datapath, class_nums, train=True, transform=None, fitting_one_image_index=-1):
         """datapath should have two folders when train
         is True, and one folder when train=False.
+        fitting_one_image_index: Given the index for choosing which index for fitting
         """
         self.file_path = datapath
         self.transform = transform
@@ -29,9 +30,14 @@ class LaserDataset(Dataset):
         else:
             self.x_fns = self.get_fns(self.file_path, train=False)
         img_test = cv2.imread(self.x_fns[0])
+        self.fitting_one_image_index = fitting_one_image_index
+
         self.init_grid(img_test.shape[0], img_test.shape[1])
         
     def __getitem__(self, index):
+        if self.fitting_one_image_index != -1:
+            index = self.fitting_one_image_index
+
         if self.train:
             # x_fn, y_fn = self.x_fns[index], self.y_fns[index]
             x_fn, y_fn = self.x_fns[index], self.y_fns[index]
@@ -132,8 +138,8 @@ class SegData(Dataset):
         return fmt_str
 
 class Seg_Data_Beta(LaserDataset):
-    def __init__(self, datapath, class_nums, train=True, transform=None):
-        super().__init__(datapath, class_nums, train=True, transform=None)
+    def __init__(self, datapath, class_nums, train=True, transform=None, fitting_one_image_index=-1):
+        super().__init__(datapath, class_nums, train=True, transform=None, fitting_one_image_index=-1)
     
     def __repr__(self):
         fmt_str = 'undersea segmentation'
