@@ -12,7 +12,7 @@ import torchvision.transforms.functional as F
 
 __all__ = ["_Compose", "_ColorJitter", "_Resize", "_RandomApply", "_RandomRotation",
             "_Lambda", "_RandomApply", "_RandomGrayscale", "_RandomCrop", 
-            "_RandomHorizontalFlip", "_RandomVerticalFlip", "_ToTensor", "_Lambda"]
+            "_RandomHorizontalFlip", "_RandomVerticalFlip", "_ToTensor", "_Lambda", "_Pad"]
 
 class _Compose(transforms.Compose):
     def __init__(self, transforms):
@@ -22,6 +22,14 @@ class _Compose(transforms.Compose):
         for t in self.transforms:
             img, target = t(img, target)
         return img, target
+    
+    def __getitem__(self, index):
+        return self.transforms[index]
+
+class _Non_op_for_target(object):       
+    def __call__(self, target):
+        return target
+    
 
 class _ColorJitter(transforms.ColorJitter):
     """Randomly change the brightness, contrast and saturation of an image.
@@ -55,18 +63,18 @@ class _ColorJitter(transforms.ColorJitter):
         transforms = []
         if brightness > 0:
             brightness_factor = random.uniform(max(0, 1 - brightness), 1 + brightness)
-            transforms.append(_Lambda(lambda img, target: (F.adjust_brightness(img, brightness_factor), target_op(target, F.adjust_brightness, brightness_factor))))
+            transforms.append(_Lambda(lambda img, target: (F.adjust_brightness(img, brightness_factor), target)))
         if contrast > 0:
             contrast_factor = random.uniform(max(0, 1 - contrast), 1 + contrast)
-            transforms.append(_Lambda(lambda img, target: (F.adjust_contrast(img, contrast_factor), target_op(target, F.adjust_contrast, contrast_factor))))
+            transforms.append(_Lambda(lambda img, target: (F.adjust_contrast(img, contrast_factor), target)))
 
         if saturation > 0:
             saturation_factor = random.uniform(max(0, 1 - saturation), 1 + saturation)
-            transforms.append(_Lambda(lambda img, target: (F.adjust_saturation(img, saturation_factor), target_op(target, F.adjust_saturation, saturation_factor))))
+            transforms.append(_Lambda(lambda img, target: (F.adjust_saturation(img, saturation_factor), target)))
 
         if hue > 0:
             hue_factor = random.uniform(-hue, hue)
-            transforms.append(_Lambda(lambda img, target: (F.adjust_hue(img, hue_factor), target_op(target, F.adjust_hue, hue_factor))))
+            transforms.append(_Lambda(lambda img, target: (F.adjust_hue(img, hue_factor), target)))
 
         random.shuffle(transforms)
         transform = _Compose(transforms)
@@ -115,7 +123,8 @@ class _RandomGrayscale(transforms.RandomGrayscale):
     def __call__(self, img, target):
         num_output_channels = 1 if img.mode == 'L' else 3
         if random.random() < self.p:
-            return F.to_grayscale(img, 3), target_op(target, F.to_grayscale, 1)
+            # return F.to_grayscale(img, 3), target_op(target, F.to_grayscale, 1)
+            return F.to_grayscale(img, 3), target
         return img, target
         
 class _Pad(transforms.Pad):
@@ -125,17 +134,24 @@ class _Pad(transforms.Pad):
             self.out_shape = [output_shape]*2
         else:
             self.out_shape = output_shape
+        super().__init__(1, fill, padding_mode)
     def __call__(self, img, target):
         eh, ew = self.out_shape
-        # pad the width if needed
-        if self.pad_if_needed and img.size[0] < ew:
-            img = F.pad(img, (int((1 + ew - img.size[0]) / 2), 0), self.fill, self.padding_mode)
-            target = target_op(target, F.pad, (int((1 + ew - target.size[0]) / 2), 0), self.fill, self.padding_mode)
-        # pad the height if needed
-        if self.pad_if_needed and img.size[1] < eh:
-            img = F.pad(img, (0, int((1 + eh - img.size[1]) / 2)), self.fill, self.padding_mode)
-            target = target_op(target, F.pad, (0, int((1 + eh - target.size[1]) / 2)), self.fill, self.padding_mode)
-
+        pad_left, pad_top, pad_right, pad_bottom = 0, 0, 0, 0
+        
+        if img.size[0] < ew:
+            pad_left = (ew-img.size[0])//2 + img.size[0] % 2
+            pad_right = (ew-img.size[0])//2
+        if img.size[1] < eh:
+            pad_top = (eh-img.size[1])//2 + img.size[1] % 2
+            pad_bottom = (eh-img.size[1])//2
+            
+        padding = pad_left, pad_top, pad_right, pad_bottom
+        img = F.pad(img, padding, self.fill, self.padding_mode)
+        target = target_op(target, F.pad, padding, self.fill, self.padding_mode)
+            
+        self.padding = padding
+        return img, target
         
 class _RandomCrop(transforms.RandomCrop):
     def __init__(self, size, padding=None, pad_if_needed=False, fill=0, padding_mode='constant'):
@@ -149,11 +165,11 @@ class _RandomCrop(transforms.RandomCrop):
         # pad the width if needed
         if self.pad_if_needed and img.size[0] < self.size[1]:
             img = F.pad(img, (int((1 + self.size[1] - img.size[0]) / 2), 0), self.fill, self.padding_mode)
-            target = target_op(target, F.pad, (int((1 + self.size[1] - target.size[0]) / 2), 0), self.fill, self.padding_mode)
+            target = target_op(target, F.pad, (int((1 + self.size[1] - target.shape[0]) / 2), 0), self.fill, self.padding_mode)
         # pad the height if needed
         if self.pad_if_needed and img.size[1] < self.size[0]:
             img = F.pad(img, (0, int((1 + self.size[0] - img.size[1]) / 2)), self.fill, self.padding_mode)
-            target = target_op(target, F.pad, (0, int((1 + self.size[0] - target.size[1]) / 2)), self.fill, self.padding_mode)
+            target = target_op(target, F.pad, (0, int((1 + self.size[0] - target.shape[1]) / 2)), self.fill, self.padding_mode)
 
         i, j, h, w = self.get_params(img, self.size)
 
