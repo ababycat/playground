@@ -166,8 +166,9 @@ def train_AlbuNet_LSTM(model, loss_fn, optimizer, loader_train, log, **config):
 import matplotlib.pyplot as plt
 
 class ShallowNet_Loss:
-    def __init__(self):
+    def __init__(self, model=None):
         self.loss_fn = None
+        self.model = model
 
     def __call__(self, logits, y):
         # y: bs, 1, H, W
@@ -178,7 +179,7 @@ class ShallowNet_Loss:
         predict = logits > 0
         label = (y>0.3)
         false_positive = (predict==True)&(label==False)
-        print(torch.sum(false_positive).item())
+        # print(torch.sum(false_positive).item())
 
         p_weight = torch.Tensor([600])
         if y.is_cuda:
@@ -190,7 +191,13 @@ class ShallowNet_Loss:
         weight[false_positive] = 600
 
         self.loss_fn = nn.BCEWithLogitsLoss(weight=weight, pos_weight=p_weight)
-        return self.loss_fn(logits, y.type(torch.float))
+        if self.model is not None:
+            k, c, h, w = self.model.conv1.weight.shape
+            self.model.conv1.weight.reshape(k, -1)
+
+            # return self.loss_fn(logits, y.type(torch.float)) + 
+        else:
+            return self.loss_fn(logits, y.type(torch.float))
 
 
 def train_ShallowNet(model, loss_fn, optimizer, loader_train, log, **config):
@@ -224,7 +231,7 @@ def train_ShallowNet(model, loss_fn, optimizer, loader_train, log, **config):
             optimizer.zero_grad()
             loss.backward()
             # torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
-            optimizer.step()
+            optimizer.step()    
 
             log['loss'].append(loss.item())
 
