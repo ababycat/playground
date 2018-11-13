@@ -16,7 +16,7 @@ void setup(){
   size(500, 500);
   ps = new ParticalSystem();
   
-  ps.add_node("base_begin", Vec2D(0, height/2), true);
+  ps.add_node("base_begin", Vec2D(0.0, height/2.), true);
   
   ps.add_node("n1", Vec2D.randomVector(), true);
 
