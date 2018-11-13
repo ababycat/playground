@@ -51,4 +51,10 @@ Read the book [The Nature of the Code](https://natureofcode.com/).
 
 ## EM
 EM(Expectation-Maximization) algorithm
+<<<<<<< HEAD
 >>>>>>> add em
+=======
+
+## RLS
+Robust Least Square.
+>>>>>>> add RLS
