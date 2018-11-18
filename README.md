@@ -50,6 +50,7 @@ Read the book [The Nature of the Code](https://natureofcode.com/).
 =======
 
 ## EM
+<<<<<<< HEAD
 EM(Expectation-Maximization) algorithm
 <<<<<<< HEAD
 >>>>>>> add em
@@ -58,3 +59,15 @@ EM(Expectation-Maximization) algorithm
 ## RLS
 Robust Least Square.
 >>>>>>> add RLS
+=======
+EM(Expectation-Maximization) algorithm.
+
+## RLS
+Robust Least Square.
+
+## kalman
+Get mpu6050 data use python on ubuntu and ekf, ukf simulation use matlab.
+
+## stochastic_process
+Report of stochastic process experiments.
+>>>>>>> modified readme'
