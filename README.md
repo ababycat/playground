@@ -37,7 +37,7 @@ A library for matrix calculation wrote by pure c++. Please see the `README.md` f
 Implement the segmentation network architectures [U-Net](https://lmb.informatik.uni-freiburg.de/people/ronneber/u-net/) and [TernausNetV2](https://github.com/ternaus/TernausNetV2) for image segmentation. The network architecture use the code in [TernausNetV2](https://github.com/ternaus/TernausNetV2).
 >>>>>>> Update README.md
 
-#simlink_tutorials
+# simlink_tutorials
 Several simulink models, Reading the book "Legged Robots That Ballance".
 
 ## undergraduate 
