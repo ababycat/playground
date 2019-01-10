@@ -42,8 +42,8 @@ gy_offset = np.mean(gy_data[0:offset_num])
 gz_offset = np.mean(gz_data[0:offset_num])
 
 fi_kf = Kalman(F=np.array([[1, 1], [0, 1]]),
-            P = np.array([[1000, 0], [0, 1000]]),
-            Q = np.array([[0.01, 0], [0, 0.01]]),
+            P = np.array([[10, 0], [0, 10]]),
+            Q = np.array([[0.001, 0], [0, 0.001]]),
             R = np.array([[1000]]),
             H = np.array([[1, 0]]),
             x = np.array([[0], [0]]),
@@ -87,8 +87,6 @@ for id_measure in range(offset_num, data_length):
     # get measure
     fi = np.arctan(ax/max(np.sqrt(np.sum(ay**2+az**2)), 1e-8))*180/np.pi
     theta = np.arctan(ay/max(az, 1e-8))*180/np.pi
-
-
 
     if should_init_kf:
         should_init_kf = False
