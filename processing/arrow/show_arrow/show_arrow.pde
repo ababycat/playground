@@ -1,9 +1,8 @@
 
 ArrowSystem arrow_sys;
-int noise_x = 100;
-int noise_y = 10000;
-
-int step = 100;
+float noise_idx = 1000;
+float noise_idy = 0;
+float noise_step = 0.001;
 
 void setup(){
   //fullScreen();
@@ -18,28 +17,19 @@ void draw(){
   arrow_sys.update();
   arrow_sys.display();
   
+  arrow_sys.cx = noise(noise_idx) * width;
+  arrow_sys.cy = noise(noise_idy) * height; 
   
-  //arrow_sys.cx = noise(noise_x)*width;
-  //arrow_sys.cy = noise(noise_y)*height;
- 
-  //if(--step == 0){
-  //  step = 100;
-  //  noise_x++;
-  //  noise_y++;
-  //  if(noise_x > 200){
-  //     noise_x = 100;
-  //  }
-  //  if(noise_y > 10200){
-  //    noise_y = 10000;
-  //  }
-  //}
-  
-  //println(arrow_sys.cx, arrow_sys.cy);
+  noise_idx += 0.01;
+  noise_idy += 0.01;
 }
 
 
 void mouseMoved() {
   arrow_sys.cx = mouseX;
   arrow_sys.cy = mouseY;
-  save("arrow.jpg");
+}
+
+void keyPressed() {
+  //saveFrame(); 
 }
