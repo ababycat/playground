@@ -41,85 +41,91 @@ gx_offset = np.mean(gx_data[0:offset_num])
 gy_offset = np.mean(gy_data[0:offset_num])
 gz_offset = np.mean(gz_data[0:offset_num])
 
-fi_kf = Kalman(F=np.array([[1, 1], [0, 1]]),
-            P = np.array([[1000, 0], [0, 1000]]),
-            Q = np.array([[0.01, 0], [0, 0.01]]),
-            R = np.array([[100]]),
-            H = np.array([[1, 0]]),
-            x = np.array([[0], [0]]),
-            u = np.array([[0], [0]]))
-            
-theta_kf = Kalman(F=np.array([[1, 1], [0, 1]]),
-            P = np.array([[1000, 0], [0, 1000]]),
-            Q = np.array([[0.1, 0], [0, 0.1]]),
-            R = np.array([[10]]),
-            H = np.array([[1, 0]]),
-            x = np.array([[0], [0]]),
-            u = np.array([[0], [0]]))
-should_init_kf = True
+# q = 1000
+# r = 0.001
 
-fi_raw_list = []
-theta_raw_list = []
+Q_list = [1000, 0.001]
+R_list = [1000, 0.001]
+for q, r in zip(Q_list, R_list):
+    fi_kf = Kalman(F=np.array([[1, 1], [0, 1]]),
+                P = np.array([[1000, 0], [0, 1000]]),
+                Q = np.array([[q, 0], [0, q]]),
+                R = np.array([[r]]),
+                H = np.array([[1, 0]]),
+                x = np.array([[0], [0]]),
+                u = np.array([[0], [0]]))
+                
+    theta_kf = Kalman(F=np.array([[1, 1], [0, 1]]),
+                P = np.array([[1000, 0], [0, 1000]]),
+                Q = np.array([[q, 0], [0, q]]),
+                R = np.array([[r]]),
+                H = np.array([[1, 0]]),
+                x = np.array([[0], [0]]),
+                u = np.array([[0], [0]]))
+    should_init_kf = True
 
-fi_predict_list = []
-theta_predict_list = []
+    fi_raw_list = []
+    theta_raw_list = []
 
-# begin
-for id_measure in range(offset_num, data_length):
-    # get raw data
-    ax_raw = ax_data[id_measure]
-    ay_raw = ay_data[id_measure]
-    az_raw = az_data[id_measure]
-    gx_raw = gx_data[id_measure]
-    gy_raw = gy_data[id_measure]
-    gz_raw = gz_data[id_measure]
-    
-    # substract offset for gyro only
-    gx_raw = gx_raw - gx_offset
-    gy_raw = gy_raw - gy_offset
-    gz_raw = gz_raw - gz_offset
+    fi_predict_list = []
+    theta_predict_list = []
 
-    ax, ay, az, gx, gy, gz = ax_raw, ay_raw, az_raw, gx_raw, gy_raw, gz_raw
+    # begin
+    for id_measure in range(offset_num, data_length):
+        # get raw data
+        ax_raw = ax_data[id_measure]
+        ay_raw = ay_data[id_measure]
+        az_raw = az_data[id_measure]
+        gx_raw = gx_data[id_measure]
+        gy_raw = gy_data[id_measure]
+        gz_raw = gz_data[id_measure]
+        
+        # substract offset for gyro only
+        gx_raw = gx_raw - gx_offset
+        gy_raw = gy_raw - gy_offset
+        gz_raw = gz_raw - gz_offset
 
-    # get measure
-    fi = np.arctan(ax/max(np.sqrt(np.sum(ay**2+az**2)), 1e-8))*180/np.pi
-    theta = np.arctan(ay/max(az, 1e-8))*180/np.pi
+        ax, ay, az, gx, gy, gz = ax_raw, ay_raw, az_raw, gx_raw, gy_raw, gz_raw
 
-    if should_init_kf:
-        should_init_kf = False
-        fi_kf.set_init_x = np.array([[fi], [0]])
-        theta_kf.set_init_x = np.array([[theta], [0]])
+        # get measure
+        fi = np.arctan(ax/max(np.sqrt(np.sum(ay**2+az**2)), 1e-8))*180/np.pi
+        theta = np.arctan(ay/max(az, 1e-8))*180/np.pi
 
-    fi_kf.predict()
-    fi_predict = fi_kf.measurement(np.array([[fi]]))[0, 0]
+        if should_init_kf:
+            should_init_kf = False
+            fi_kf.set_init_x = np.array([[fi], [0]])
+            theta_kf.set_init_x = np.array([[theta], [0]])
 
-    theta_kf.predict()
-    theta_predict = theta_kf.measurement(np.array([[theta]]))[0, 0]
+        fi_kf.predict()
+        fi_predict = fi_kf.measurement(np.array([[fi]]))[0, 0]
 
-    fi_raw_list.append(fi)
-    theta_raw_list.append(theta)
+        theta_kf.predict()
+        theta_predict = theta_kf.measurement(np.array([[theta]]))[0, 0]
 
-    fi_predict_list.append(fi_predict)
-    theta_predict_list.append(theta_predict)
+        fi_raw_list.append(fi)
+        theta_raw_list.append(theta)
 
-plt.figure()
-plt.plot(x_time[offset_num:], fi_raw_list)
-plt.plot(x_time[offset_num:], fi_predict_list)
-plt.title('fi')
-plt.legend(['raw', 'predict'])
+        fi_predict_list.append(fi_predict)
+        theta_predict_list.append(theta_predict)
 
-plt.figure()
-plt.plot(x_time[offset_num:], theta_raw_list)
-plt.plot(x_time[offset_num:], theta_predict_list)
-plt.title('theta')
-plt.legend(['raw', 'predict'])
+    plt.figure()
+    plt.plot(x_time[offset_num:], fi_raw_list)
+    plt.plot(x_time[offset_num:], fi_predict_list)
+    plt.title('fi'+'q_'+str(q)+' r_'+str(r))
+    plt.legend(['raw', 'predict'])
+
+    plt.figure()
+    plt.plot(x_time[offset_num:], theta_raw_list)
+    plt.plot(x_time[offset_num:], theta_predict_list)
+    plt.title('theta'+'q_'+str(q)+' r_'+str(r))
+    plt.legend(['raw', 'predict'])
+    # plt.show()
+
+
+
+
+
 plt.show()
-
-
-
-
-
-
 
 
 
