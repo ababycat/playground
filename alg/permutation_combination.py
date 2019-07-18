@@ -1,4 +1,12 @@
+# hello encoding=utf-8
+"""https://www.quora.com/How-would-you-explain-an-algorithm-that-generates-permutations-using-lexicographic-ordering
+https://github.com/CodingTrain/website/blob/master/CodingChallenges/CC_035.2_LexicographicOrder/Processing/CC_035_2_LexicographicOrder/CC_035_2_LexicographicOrder.pde
+"""
+
+
 def permutation(array):
+    """ recursion 
+    """
     if len(array) == 1:
         return [array]
     output = []
@@ -10,9 +18,11 @@ def permutation(array):
         for back in permutation(remain):
             output.append([array[i]] + back)
     return output
-    
-    
+
+
 def combine(array, n):
+    """ recursion 
+    """
     if len(array) == n:
         return [array]
     elif n == 0:
@@ -26,13 +36,13 @@ def combine(array, n):
             for r in combine(remain, n-1):
                 output.append([array[i]] + r)
     return output
-    
-    
-array = [1, 2, 3, 4]
-for line in permutation(array):
-    print(line)
 
 
-A = [2, 3, 5, 2]
-for line in combine(A, 2):
-    print(line)
+if __name__ == "__main__":
+    array = [1, 2, 3, 4]
+    for line in permutation(array):
+        print(line)
+
+    A = [2, 3, 5, 2]
+    for line in combine(A, 2):
+        print(line)
