@@ -1,6 +1,6 @@
-float MIN_LIVE_LEN = 50.0;
-float MAX_LENGTH = 100.0;
-float MIN_LENGTH = 80.0;
+float MIN_LIVE_LEN = 120.0;
+float MAX_LENGTH = 200.0;
+float MIN_LENGTH = 150.0;
 float MAX_RADIUS_RATE = 0.8;
 float MIN_RADIUS_RATE = 0.5;
 
