@@ -18,44 +18,53 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtNetwork import *
 
+
 class DataReceive(QObject):
-    Signal_receiveDone = pyqtSignal()
 
     def __init__(self, parent=None):
         super(DataReceive, self).__init__(parent)
-        self.tcpServer = QTcpServer()
-        if not self.tcpServer.listen(QHostAddress.Any, 8888):
-            print('port 10001 is busy, please change the port!')
-            self.close()
-        self.tcpServer.newConnection.connect(self.sendMessage)
-        self.tcpServerConnection = None
+        self.tcpServer = QTcpServer(self)
+        if self.tcpServer.listen(QHostAddress("127.0.0.1"), 8890):
+            self.tcpServer.newConnection.connect(self.sendMessage)
+            self.tcpServerConnection = None
+            print('init done')
+
+        self.index = 0
         self.data_size = 0
         self.message = None
         self.image = None
 
     def sendMessage(self):
+        print('send')
         self.data_size = 0
         self.tcpServerConnection = self.tcpServer.nextPendingConnection()
         self.tcpServerConnection.readyRead.connect(self.readData)
 
     def readData(self):
-        self.message = QByteArray()
-        in_data = QDataStream(self.tcpServerConnection)
+        in_data = QDataStream(self.client)
         in_data.setVersion(QDataStream.Qt_4_0)
         if self.data_size == 0:
-            tmp = self.tcpServerConnection.bytesAvailable()
+            tmp = self.client.bytesAvailable()
             if tmp < SIZEOF_UINT32:
                 return
-            self.data_size = in_data.readInt32()
-        if self.tcpServerConnection.bytesAvailable() < self.data_size - 14:
+            self.data_size = in_data.readUInt32()
+            print(self.data_size)
+        if self.client.bytesAvailable() < self.data_size:
             return
 
-        self.message = self.tcpServerConnection.read(self.data_size - 14)
-        self.parse_message(self.message)
+        self.message = self.client.read(self.data_size)
 
-    def parse_message(self, message):
-        print(message)
+        self.list.append(self.message)
+        print(self.index)
+        self.index = self.index + 1
 
+        if self.index == 10:
+            try:
+                with open("message.pkl", "wb") as fp:
+                    pickle.dump(self.list, fp, pickle.HIGHEST_PROTOCOL)
+                self.client.close()
+            except:
+                print("what")
 
     # def readImage(self, ba):
     #     img = QImage()
@@ -109,6 +118,58 @@ class DataReceive(QObject):
 #     def inputImage(self, image):
 #         self._imageBuff = image
 
+import pickle
+
+class Client(QObject):
+    Signal_receiveDone = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super(Client, self).__init__(parent)
+        self.client = QTcpSocket(self)
+        self.client.abort()
+        self.client.connectToHost("127.0.0.1", 8890)
+        self.client.readyRead.connect(self.readData)
+
+        self.data_size = 0
+        self.message = None
+        self.image = None
+        self.list = []
+    # def sendMessage(self):
+    #     print('send')
+    #     self.data_size = 0
+    #     self.tcpServerConnection = self.tcpServer.nextPendingConnection()
+    #     self.tcpServerConnection.readyRead.connect(self.readData)
+        self.index = 0
+    def readData(self):
+        self.message = QByteArray()
+        in_data = QDataStream(self.client)
+        in_data.setVersion(QDataStream.Qt_4_0)
+        if self.data_size == 0:
+            tmp = self.client.bytesAvailable()
+            if tmp < SIZEOF_UINT32:
+                return
+            self.data_size = in_data.readUInt32()
+            print(self.data_size)
+        if self.client.bytesAvailable() < self.data_size:
+            return
+
+        self.message = self.client.read(self.data_size)
+
+        self.list.append(self.message)
+        print(self.index)
+        self.index = self.index + 1
+
+        if self.index == 10:
+            try:
+                with open("message.pkl", "wb") as fp:
+                    pickle.dump(self.list, fp, pickle.HIGHEST_PROTOCOL)
+                self.client.close()
+            except:
+                print("what")
+
+    def parse_message(self, message):
+        print(message)
+
 
 class MainWindow(QWidget):
     def __init__(self, parent=None):
@@ -120,6 +181,7 @@ class MainWindow(QWidget):
         self.setLayout(self.layout)
 
         self.dataReceive = DataReceive(self)
+        # self.client = Client(self)
 
 
     def __del__(self):
