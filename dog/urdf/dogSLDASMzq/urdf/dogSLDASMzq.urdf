@@ -1,0 +1,212 @@
+<robot
+  name="dogSLDASMzq">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.155530821712152 0.221566431422054 0.486618641724374"
+        rpy="0 0 0" />
+      <mass
+        value="0.0208829153447499" />
+      <inertia
+        ixx="4.32294312623559E-06"
+        ixy="-2.36836321133348E-06"
+        ixz="1.30737288151604E-06"
+        iyy="1.40660057631197E-05"
+        iyz="1.99332959841374E-07"
+        izz="1.26285644079508E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="little1">
+    <inertial>
+      <origin
+        xyz="0.000509089349897407 0.0191985088437776 0.00804402568823503"
+        rpy="0 0 0" />
+      <mass
+        value="0.00508030214699753" />
+      <inertia
+        ixx="1.98063815621093E-06"
+        ixy="7.41816437660907E-10"
+        ixz="3.71107699242409E-10"
+        iyy="6.3271160898242E-07"
+        iyz="-6.45794307193409E-07"
+        izz="1.36153532691005E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/little1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/little1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="motor1"
+    type="fixed">
+    <origin
+      xyz="-0.17954 0.21729 0.49012"
+      rpy="-2.7077 -0.054634 -1.3412" />
+    <parent
+      link="base_link" />
+    <child
+      link="little1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="little2">
+    <inertial>
+      <origin
+        xyz="-0.0609307372029643 -0.00649999888829217 -0.0443715213592641"
+        rpy="0 0 0" />
+      <mass
+        value="0.00925987299233387" />
+      <inertia
+        ixx="1.21331440085349E-05"
+        ixy="5.40734691486351E-12"
+        ixz="-1.24872051720678E-05"
+        iyy="2.60229572522697E-05"
+        iyz="4.23264176351129E-12"
+        izz="1.39145064581202E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/little2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/little2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_little1"
+    type="revolute">
+    <origin
+      xyz="0 0.034641 0.02"
+      rpy="3.1416 0.5236 -1.5708" />
+    <parent
+      link="little1" />
+    <child
+      link="little2" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="0"
+      upper="3.1416"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="little">
+    <inertial>
+      <origin
+        xyz="-0.000499997430791488 -0.0254755624132497 -0.0576538513410443"
+        rpy="0 0 0" />
+      <mass
+        value="0.0169008820775933" />
+      <inertia
+        ixx="7.34355933905718E-05"
+        ixy="-2.78186022922072E-12"
+        ixz="-3.86017218022492E-12"
+        iyy="6.11679707418963E-05"
+        iyz="-2.63788541415557E-05"
+        izz="1.23126914825887E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/little.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://dogSLDASMzq/meshes/little.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_little2"
+    type="revolute">
+    <origin
+      xyz="-0.10973 0 -0.10227"
+      rpy="2.3913 -1.0797E-14 1.5708" />
+    <parent
+      link="little2" />
+    <child
+      link="little" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="0"
+      upper="3.1416"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>
