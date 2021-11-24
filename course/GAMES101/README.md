@@ -25,3 +25,10 @@
 - figure
 
 ![figure](image/figure.png)
+
+
+## homework4
+
+- bezier curve
+
+![my_bezier_curve](image/my_bezier_curve.png)
