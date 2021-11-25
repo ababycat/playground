@@ -32,3 +32,21 @@
 - bezier curve
 
 ![my_bezier_curve](image/my_bezier_curve.png)
+
+## homework5
+
+- ray tracing
+
+![raytracing](image/raytracing.jpg)
+
+## homework6
+
+- ray tracing bvh
+
+![ray-tracingbvh](image/ray-tracingbvh.jpg)
+
+## homework7
+
+- path tracing
+
+![pathtracing](image/pathtracing.jpg)
