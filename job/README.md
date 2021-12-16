@@ -28,3 +28,6 @@
 
 ![image](https://github.com/heylfda/CircleTrack/blob/master/Figure_1.png)
 
+## 机器人导航
+
+![image](../course/udacity_cs373/06_SLAM/show.jpg)
