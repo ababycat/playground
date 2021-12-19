@@ -31,3 +31,7 @@
 ## 机器人导航
 
 ![image](../course/udacity_cs373/06_SLAM/show.jpg)
+
+## 线型激光三维重建
+
+![image](./image/line_laser.png))
