@@ -1,5 +1,5 @@
 
-## GAMES101 Path Tracing
+## GAMES101 blinn-phong
 ![image](../course/GAMES101/image/blinn-phong.png)
 
 
