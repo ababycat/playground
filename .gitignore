@@ -4,3 +4,11 @@ __pycache__/
 .*~
 .vscode
 *.pyc
+.vs
+cpp/playground_cpp/Debug
+cpp/playground_cpp/playground_cpp/x64
+cpp/playground_cpp/playground_cpp/Debug
+cpp/playground_unittest/Debug
+cpp/playground_unittest/x64/
+cpp/playground_unittest/playground_unittest/x64/
+cpp/playground_unittest/playground_unittest/Debug
