@@ -50,6 +50,40 @@ namespace playgroundunittest{
 		}
 	};
 
+	class TestDefaultInitializeClass
+	{
+	public:
+		TestDefaultInitializeClass()
+		{
+
+		}
+
+		int i;
+		int a : 1;
+		int b : 1;
+		int c : 2;
+	};
+
+	enum ETestEnum
+	{
+		First,
+		Second
+	};
+
+	void test_no_name_enum(ETestEnum)
+	{
+		Logger::WriteMessage("test_no_name_enum function run!\n");
+	}
+
+	void test_no_name_int()
+	{
+		Logger::WriteMessage("test_no_name_int() function run!\n");
+	}
+
+	void test_no_name_int(int)
+	{
+		Logger::WriteMessage("test_no_name_int(int) function run!\n");
+	}
 
 	TEST_CLASS(test_cpp){
 public:
@@ -57,10 +91,10 @@ public:
 	TEST_METHOD(TestStaticCast)
 	{
 		int i = 10;
-		float a = 10.4;
-		float b = 10.5;
+		float a = 10.4f;
+		float b = 10.5f;
 
-		float c = 10.9;
+		float c = 10.9f;
 
 		std::string s;
 
@@ -92,5 +126,29 @@ public:
 		Assert::AreEqual(TestMoveConstruct::copy_num, 1);
 	}
 
+    TEST_METHOD(TestDefaultInitialize)
+    {
+
+		int i(0);
+
+        Assert::AreEqual(i, 0);
+
+		int b;
+		Assert::AreNotEqual(b, 0);
+
+		Logger::WriteMessage("b not initialized\n");
+		
+		TestDefaultInitializeClass c;
+		Assert::AreNotEqual(c.i, 0);
+
+		Logger::WriteMessage("c initialized\n");
+    }
+
+	TEST_METHOD(TestNoNameEnum)
+	{
+
+		test_no_name_enum(ETestEnum::First);
+		test_no_name_int(1);
+	}
 	};
 }
